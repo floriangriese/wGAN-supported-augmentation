@@ -42,7 +42,7 @@ if __name__ == "__main__":
 
     download()
 
-    #@st.experimental_memo(suppress_st_warning=True)
+    @st.experimental_memo(suppress_st_warning=True)
     def get_generators(metadata):
         #st.write("Cache miss: get_generators")
         checkpoints = {
@@ -60,7 +60,7 @@ if __name__ == "__main__":
 
     generators = get_generators(metadata)
 
-    #@st.experimental_memo(suppress_st_warning=True)
+    @st.experimental_memo(suppress_st_warning=True)
     def get_generated_images(_generators, bsize, n_gen_images, nz, device):
         #st.write("Cache miss: get_generated_images")
         """
@@ -91,7 +91,7 @@ if __name__ == "__main__":
         return generated_images
 
 
-    #@st.experimental_singleton(suppress_st_warning=True)
+    @st.experimental_singleton(suppress_st_warning=True)
     def get_data_loader():
         #st.write("Cache miss: get_data_loader")
         train_transform = transforms.Compose(
@@ -104,7 +104,6 @@ if __name__ == "__main__":
         real_data = FIRSTGalaxyData(root=os.getcwd(),
                                     selected_classes=["FRI", "FRII", "Compact", "Bent"], transform=train_transform,
                                     selected_split="test",
-                                    selected_catalogues=["MiraBest", "Capetti2017a", "Baldi2018"],
                                     input_data_list=["galaxy_data_crossvalid_test_h5.h5"])
         print(real_data)
         dataloader = torch.utils.data.DataLoader(real_data, batch_size=metadata['bsize'], shuffle=False,
@@ -119,7 +118,7 @@ if __name__ == "__main__":
     random.seed(seed)
     np.random.seed(seed)
 
-    num_gen_img = st.slider('Num of generated images', 1, 40, 20)
+    num_gen_img = st.slider('Num of generated images', 1, 100, 50)
     res = get_generated_images(generators, metadata['nz'], num_gen_img, metadata['nz'], device)
 
     #@st.experimental_memo(suppress_st_warning=True)
@@ -139,7 +138,7 @@ if __name__ == "__main__":
     images, labels = get_image_stacks()
 
 
-    #@st.experimental_memo(suppress_st_warning=True)
+    @st.experimental_memo(suppress_st_warning=True)
     def get_image_stack_gen(_result):
         #st.write("Cache miss: get_image_stack_gen")
         gen_imgs = {k: torch.vstack([z for z in v]) for k,v in _result.items()}
@@ -150,16 +149,16 @@ if __name__ == "__main__":
     sl1,sl2,sl3,sl4 = st.columns((1, 1, 1, 1))
     with sl1:
         st.write("## FRI")
-        fri_thres = st.slider('FRI threshold', 1, 15000, 7500)
+        fri_thres = st.slider('FRI threshold', 1, 15000, 1) #7500
     with sl2:
         st.write("## FRII")
-        frii_thres = st.slider('FRII threshold', 1, 15000, 7500)
+        frii_thres = st.slider('FRII threshold', 1, 15000, 1) #7500
     with sl3:
         st.write("## Compact")
-        compact_thres = st.slider('Compact threshold', 1, 5000, 2500)
+        compact_thres = st.slider('Compact threshold', 1, 5000, 1) #2500
     with sl4:
         st.write("## Bent")
-        bent_thres = st.slider('Bent threshold', 1, 15000, 7500)
+        bent_thres = st.slider('Bent threshold', 1, 15000, 1) #7500
 
     thresholds = {
         0: fri_thres,  # 15000
@@ -230,9 +229,9 @@ if __name__ == "__main__":
         fri_gen_ind = st.slider("FRI gen index", 0, len(thresh_gen_images[0])-1, 0)
         fri_gen_img = tg0[fri_gen_ind].cpu().detach().numpy()
         st.image(fri_gen_img, use_column_width=True)
-        #filename = convert_data_to_hdf5(tg0, random.getrandbits(128))
-        #with open(filename, "rb") as f:
-        #    st.download_button("Download generated data", file_name=filename, data=f, mime='application/x-hdf5')
+        filename = convert_data_to_hdf5(tg0, random.getrandbits(128))
+        with open(filename, "rb") as f:
+            st.download_button("Download generated data", file_name=filename, data=f, mime='application/x-hdf5')
     with FRII_real_col:
         st.write("### FRII real:")
         frii_real_ind = st.slider("FRII real index", 0, len(thresh_real_images[1])-1,0)
@@ -243,9 +242,9 @@ if __name__ == "__main__":
         frii_gen_ind = st.slider("FRII gen index", 0, len(thresh_gen_images[1])-1,0)
         frii_gen_img = tg1[frii_gen_ind].cpu().detach().numpy()
         st.image(frii_gen_img, use_column_width=True)
-        #filename = convert_data_to_hdf5(tg1, random.getrandbits(128))
-        #with open(filename, "rb") as f:
-        #    st.download_button("Download generated data", file_name=filename, data=f, mime='application/x-hdf5')
+        filename = convert_data_to_hdf5(tg1, random.getrandbits(128))
+        with open(filename, "rb") as f:
+            st.download_button("Download generated data", file_name=filename, data=f, mime='application/x-hdf5')
     with Compact_real_col:
         st.write("### Compact real:")
         compact_real_ind = st.slider("Compact real index", 0, len(thresh_real_images[2])-1,0)
@@ -256,9 +255,9 @@ if __name__ == "__main__":
         compact_gen_ind = st.slider("Compact gen index", 0, len(thresh_gen_images[2])-1,0)
         compact_gen_img = tg2[compact_gen_ind].cpu().detach().numpy()
         st.image(compact_gen_img, use_column_width=True)
-        #filename = convert_data_to_hdf5(tg2, random.getrandbits(128))
-        #with open(filename, "rb") as f:
-        #    st.download_button("Download generated data", file_name=filename, data=f, mime='application/x-hdf5')
+        filename = convert_data_to_hdf5(tg2, random.getrandbits(128))
+        with open(filename, "rb") as f:
+            st.download_button("Download generated data", file_name=filename, data=f, mime='application/x-hdf5')
     with Bent_real_col:
         st.write("### Bent real:")
         bent_real_ind = st.slider("Bent real index", 0, len(thresh_real_images[3])-1,0)
@@ -269,9 +268,9 @@ if __name__ == "__main__":
         bent_gen_ind = st.slider("Bent gen index", 0, len(thresh_gen_images[3])-1,0)
         bent_gen_img = tg3[bent_gen_ind].cpu().detach().numpy()
         st.image(bent_gen_img, use_column_width=True)
-        #filename = convert_data_to_hdf5(tg3, random.getrandbits(128))
-        #with open(filename, "rb") as f:
-        #    st.download_button("Download generated data", file_name=filename, data=f, mime='application/x-hdf5')
+        filename = convert_data_to_hdf5(tg3, random.getrandbits(128))
+        with open(filename, "rb") as f:
+            st.download_button("Download generated data", file_name=filename, data=f, mime='application/x-hdf5')
 
     st.write("")
     st.write("Copyright 2022 Florian Griese "
