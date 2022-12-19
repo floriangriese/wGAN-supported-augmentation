@@ -113,7 +113,7 @@ if __name__ == "__main__":
 
     dataloader = get_data_loader()
 
-    seed = 42 # st.slider('seed', 1, 10, 1)
+    seed = st.slider('seed', 1, 10, 1)
     torch.manual_seed(seed)
     random.seed(seed)
     np.random.seed(seed)
