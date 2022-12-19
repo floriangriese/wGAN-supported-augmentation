@@ -1,2 +1,7 @@
 streamlit
 numpy
+torch
+torchvision
+h5py
+firstgalaxydata
+notebook
