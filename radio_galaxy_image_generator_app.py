@@ -13,9 +13,7 @@ st.set_page_config(layout="wide", page_title="# Radio Galaxy Source Generation f
 
 if __name__ == "__main__":
     print("app started")
-
-    device_str = 'cuda' if torch.cuda.is_available() else 'cpu'
-    device = torch.device(device_str)
+    device = torch.device('cpu')
 
     @st.cache
     def get_meta_data():
@@ -23,13 +21,12 @@ if __name__ == "__main__":
              'image_shape': [1, 128, 128],
              'nz': 100,
              'ngf': 64,
-             'ngpu': 1,
              'bsize': 10,
              'num_workers': 2}
          return metadata
 
 
-    metadata=get_meta_data()
+    metadata = get_meta_data()
 
     @st.cache
     def download():
@@ -45,7 +42,7 @@ if __name__ == "__main__":
 
     download()
 
-    @st.experimental_memo(suppress_st_warning=True)
+    #@st.experimental_memo(suppress_st_warning=True)
     def get_generators(metadata):
         #st.write("Cache miss: get_generators")
         checkpoints = {
@@ -63,7 +60,7 @@ if __name__ == "__main__":
 
     generators = get_generators(metadata)
 
-    @st.experimental_memo(suppress_st_warning=True)
+    #@st.experimental_memo(suppress_st_warning=True)
     def get_generated_images(_generators, bsize, n_gen_images, nz, device):
         #st.write("Cache miss: get_generated_images")
         """
@@ -93,21 +90,23 @@ if __name__ == "__main__":
         #                 print(generated_images[label_ind].shape[0])
         return generated_images
 
-    train_transform = transforms.Compose(
+
+    #@st.experimental_singleton(suppress_st_warning=True)
+    def get_data_loader():
+        #st.write("Cache miss: get_data_loader")
+        train_transform = transforms.Compose(
             [transforms.ToTensor(),
              transforms.Normalize([0.5], [0.5]),
-             transforms.Lambda(lambda x: ((x/2 +.5)*255).int()),
+             transforms.Lambda(lambda x: ((x / 2 + .5) * 255).int()),
              transforms.CenterCrop([metadata["image_shape"][1], metadata["image_shape"][2]])
              ])
 
-    @st.experimental_singleton(suppress_st_warning=True)
-    def get_data_loader():
-        #st.write("Cache miss: get_data_loader")
         real_data = FIRSTGalaxyData(root=os.getcwd(),
                                     selected_classes=["FRI", "FRII", "Compact", "Bent"], transform=train_transform,
                                     selected_split="test",
+                                    selected_catalogues=["MiraBest", "Capetti2017a", "Baldi2018"],
                                     input_data_list=["galaxy_data_crossvalid_test_h5.h5"])
-
+        print(real_data)
         dataloader = torch.utils.data.DataLoader(real_data, batch_size=metadata['bsize'], shuffle=False,
                                                  num_workers=metadata['num_workers'])
         return dataloader
@@ -120,10 +119,10 @@ if __name__ == "__main__":
     random.seed(seed)
     np.random.seed(seed)
 
-    num_gen_img = st.slider('num of generated images', 1, 40, 20)
+    num_gen_img = st.slider('Num of generated images', 1, 40, 20)
     res = get_generated_images(generators, metadata['nz'], num_gen_img, metadata['nz'], device)
 
-    @st.experimental_memo(suppress_st_warning=True)
+    #@st.experimental_memo(suppress_st_warning=True)
     def get_image_stacks():
         #st.write("Cache miss: get_image_stacks")
         images = []
@@ -137,7 +136,7 @@ if __name__ == "__main__":
         images = torch.vstack(images)
         return images,labels
 
-    images,labels = get_image_stacks()
+    images, labels = get_image_stacks()
 
 
     #@st.experimental_memo(suppress_st_warning=True)
@@ -147,8 +146,6 @@ if __name__ == "__main__":
         return gen_imgs
 
     gen_imgs = get_image_stack_gen(res)
-
-    class_labels = list(range(4))
 
     sl1,sl2,sl3,sl4 = st.columns((1, 1, 1, 1))
     with sl1:
@@ -176,42 +173,38 @@ if __name__ == "__main__":
     thresh_real_images = {k: images[labels == k][real_sums[k] > thresholds[k]] for k in range(4)}
     thresh_gen_images = {k: gen_imgs[k][gen_sum > thresholds[k]] for k, gen_sum in gen_sums.items()}
 
+    del real_sums
+    del gen_sums
+    del gen_imgs
+
     thresh_real_indices = {k: range(len(thresh_real_images[k])) for k in range(4)}
     thresh_gen_indices = {k: range(len(thresh_gen_images[k])) for k in range(4)}
-    # gen_indices = range(2000) # set above
-
-    name_dict = {
-        0: 'FRI',
-        1: 'FRII',
-        2: 'Compact',
-        3: 'Bent',
-    }
 
     # real
-    idx = torch.randperm(thresh_real_images[0].shape[0])
-    tr0 = thresh_real_images[0][idx].view(thresh_real_images[0].size())
+    #idx = torch.randperm(thresh_real_images[0].shape[0])
+    tr0 = thresh_real_images[0][thresh_real_indices[0]].view(thresh_real_images[0].size())
 
-    idx = torch.randperm(thresh_real_images[1].shape[0])
-    tr1 = thresh_real_images[1][idx].view(thresh_real_images[1].size())
+    #idx = torch.randperm(thresh_real_images[1].shape[0])
+    tr1 = thresh_real_images[1][thresh_real_indices[1]].view(thresh_real_images[1].size())
 
-    idx = torch.randperm(thresh_real_images[2].shape[0])
-    tr2 = thresh_real_images[2][idx].view(thresh_real_images[2].size())
+    #idx = torch.randperm(thresh_real_images[2].shape[0])
+    tr2 = thresh_real_images[2][thresh_real_indices[2]].view(thresh_real_images[2].size())
 
-    idx = torch.randperm(thresh_real_images[3].shape[0])
-    tr3 = thresh_real_images[3][idx].view(thresh_real_images[3].size())
+    #idx = torch.randperm(thresh_real_images[3].shape[0])
+    tr3 = thresh_real_images[3][thresh_real_indices[3]].view(thresh_real_images[3].size())
 
     # gen
-    idx = torch.randperm(thresh_gen_images[0].shape[0])
-    tg0 = thresh_gen_images[0][idx].view(thresh_gen_images[0].size())
+    #idx = torch.randperm(thresh_gen_images[0].shape[0])
+    tg0 = thresh_gen_images[0][thresh_gen_indices[0]].view(thresh_gen_images[0].size())
 
-    idx = torch.randperm(thresh_gen_images[1].shape[0])
-    tg1 = thresh_gen_images[1][idx].view(thresh_gen_images[1].size())
+    #idx = torch.randperm(thresh_gen_images[1].shape[0])
+    tg1 = thresh_gen_images[1][thresh_gen_indices[1]].view(thresh_gen_images[1].size())
 
-    idx = torch.randperm(thresh_gen_images[2].shape[0])
-    tg2 = thresh_gen_images[2][idx].view(thresh_gen_images[2].size())
+    #idx = torch.randperm(thresh_gen_images[2].shape[0])
+    tg2 = thresh_gen_images[2][thresh_gen_indices[2]].view(thresh_gen_images[2].size())
 
-    idx = torch.randperm(thresh_gen_images[3].shape[0])
-    tg3 = thresh_gen_images[3][idx].view(thresh_gen_images[3].size())
+    #idx = torch.randperm(thresh_gen_images[3].shape[0])
+    tg3 = thresh_gen_images[3][thresh_gen_indices[3]].view(thresh_gen_images[3].size())
 
 
     #@st.experimental_memo(suppress_st_warning=True)
@@ -237,10 +230,9 @@ if __name__ == "__main__":
         fri_gen_ind = st.slider("FRI gen index", 0, len(thresh_gen_images[0])-1, 0)
         fri_gen_img = tg0[fri_gen_ind].cpu().detach().numpy()
         st.image(fri_gen_img, use_column_width=True)
-        h = random.getrandbits(128)
-        filename = convert_data_to_hdf5(tg0, h)
-        with open(filename, "rb") as f:
-            st.download_button("Download generated data", file_name=filename, data=f, mime='application/x-hdf5')
+        #filename = convert_data_to_hdf5(tg0, random.getrandbits(128))
+        #with open(filename, "rb") as f:
+        #    st.download_button("Download generated data", file_name=filename, data=f, mime='application/x-hdf5')
     with FRII_real_col:
         st.write("### FRII real:")
         frii_real_ind = st.slider("FRII real index", 0, len(thresh_real_images[1])-1,0)
@@ -251,10 +243,9 @@ if __name__ == "__main__":
         frii_gen_ind = st.slider("FRII gen index", 0, len(thresh_gen_images[1])-1,0)
         frii_gen_img = tg1[frii_gen_ind].cpu().detach().numpy()
         st.image(frii_gen_img, use_column_width=True)
-        h = random.getrandbits(128)
-        filename = convert_data_to_hdf5(tg1, h)
-        with open(filename, "rb") as f:
-            st.download_button("Download generated data", file_name=filename, data=f, mime='application/x-hdf5')
+        #filename = convert_data_to_hdf5(tg1, random.getrandbits(128))
+        #with open(filename, "rb") as f:
+        #    st.download_button("Download generated data", file_name=filename, data=f, mime='application/x-hdf5')
     with Compact_real_col:
         st.write("### Compact real:")
         compact_real_ind = st.slider("Compact real index", 0, len(thresh_real_images[2])-1,0)
@@ -265,10 +256,9 @@ if __name__ == "__main__":
         compact_gen_ind = st.slider("Compact gen index", 0, len(thresh_gen_images[2])-1,0)
         compact_gen_img = tg2[compact_gen_ind].cpu().detach().numpy()
         st.image(compact_gen_img, use_column_width=True)
-        h = random.getrandbits(128)
-        filename = convert_data_to_hdf5(tg2, h)
-        with open(filename, "rb") as f:
-            st.download_button("Download generated data", file_name=filename, data=f, mime='application/x-hdf5')
+        #filename = convert_data_to_hdf5(tg2, random.getrandbits(128))
+        #with open(filename, "rb") as f:
+        #    st.download_button("Download generated data", file_name=filename, data=f, mime='application/x-hdf5')
     with Bent_real_col:
         st.write("### Bent real:")
         bent_real_ind = st.slider("Bent real index", 0, len(thresh_real_images[3])-1,0)
@@ -279,10 +269,9 @@ if __name__ == "__main__":
         bent_gen_ind = st.slider("Bent gen index", 0, len(thresh_gen_images[3])-1,0)
         bent_gen_img = tg3[bent_gen_ind].cpu().detach().numpy()
         st.image(bent_gen_img, use_column_width=True)
-        h = random.getrandbits(128)
-        filename = convert_data_to_hdf5(tg3, h)
-        with open(filename, "rb") as f:
-            st.download_button("Download generated data", file_name=filename, data=f, mime='application/x-hdf5')
+        #filename = convert_data_to_hdf5(tg3, random.getrandbits(128))
+        #with open(filename, "rb") as f:
+        #    st.download_button("Download generated data", file_name=filename, data=f, mime='application/x-hdf5')
 
     st.write("")
     st.write("Copyright 2022 Florian Griese "
