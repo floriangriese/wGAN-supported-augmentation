@@ -272,7 +272,7 @@ if __name__ == "__main__":
         with open(filename, "rb") as f:
             st.download_button("Download generated data", file_name=filename, data=f, mime='application/x-hdf5')
 
-    st.write("")
+    st.write("For generated images:")
     st.write("Copyright 2022 Florian Griese "
              "Permission is hereby granted, free of charge, "
              "to any person obtaining a copy of this software and associated documentation files "
