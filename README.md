@@ -1,5 +1,9 @@
 # Morphological Classification of Radio Galaxies with wGAN-supported Augmentation
 [![License](https://img.shields.io/github/license/floriangriese/wGAN-supported-augmentation?color=green&style=flat)](https://github.com/floriangriese/wGAN-supported-augmentation/blob/main/LICENSE)
+
+## Impression of the generated radio galaxy images 
+https://radiogalaxyimagegenerator.streamlit.app/
+
 ## Install dependencies
 `pip install -r requirements.txt`
 
