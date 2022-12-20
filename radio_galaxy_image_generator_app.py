@@ -112,7 +112,9 @@ if __name__ == "__main__":
 
 
     dataloader = get_data_loader()
-
+    
+    st.write("# Morphological Classification of Radio Galaxies with wGAN-supported Augmentation")
+    st.write("Paper: https://arxiv.org/abs/2212.08504")
     seed = st.slider('seed', 1, 10, 1)
     torch.manual_seed(seed)
     random.seed(seed)
