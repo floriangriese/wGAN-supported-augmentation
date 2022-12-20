@@ -291,4 +291,8 @@ if __name__ == "__main__":
                                 "DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, " \
                                 "ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR " \
                                 "OTHER DEALINGS IN THE SOFTWARE.")
+    
+    st.write("For real images:")
+    st.write("Provenance: The FIRST project team: R.J. Becker, D.H. Helfand, R.L. White M.D. Gregg. S.A. Laurent-Muehleisen. "\
+             "Copyright: 1994, University of California. Permission is granted for publication and reproduction of this material for scholarly, educational, and private non-commercial use. Inquiries for potential commercial uses should be addressed to: Robert Becker, Physics Dept, University of California, Davis, CA 95616")
     print("app finished")
