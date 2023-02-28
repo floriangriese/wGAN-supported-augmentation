@@ -28,19 +28,21 @@ if __name__ == "__main__":
 
     metadata = get_meta_data()
 
+
     @st.cache
-    def download():
+    def download_zenodo():
         urls = {
-            "generator_epoch_3361_iter_30250_cla0.pt": "https://syncandshare.desy.de/index.php/s/XJbDAn2yGGipzDJ/download",
-            "generator_epoch_3833_iter_34500_cla1.pt": "https://syncandshare.desy.de/index.php/s/ArwnY6AetKPa9SM/download",
-            "generator_epoch_1305_iter_11750_cla2.pt": "https://syncandshare.desy.de/index.php/s/PQX6KrDYGjfnqRR/download",
-            "generator_epoch_4416_iter_39750_cla3.pt": "https://syncandshare.desy.de/index.php/s/HDMKN5fCp5okNBo/download",
+            "generator_epoch_3361_iter_30250_cla0.pt": "https://zenodo.org/record/7685453/files/generator_epoch_3361_iter_30250_cla0.pt?download=1",
+            "generator_epoch_3833_iter_34500_cla1.pt": "https://zenodo.org/record/7685453/files/generator_epoch_3833_iter_34500_cla1.pt?download=1",
+            "generator_epoch_1305_iter_11750_cla2.pt": "https://zenodo.org/record/7685453/files/generator_epoch_1305_iter_11750_cla2.pt?download=1",
+            "generator_epoch_4416_iter_39750_cla3.pt": "https://zenodo.org/record/7685453/files/generator_epoch_4416_iter_39750_cla3.pt?download=1",
         }
         # download file
         for key in urls.keys():
             download_url(urls[key], os.getcwd(), key)
 
-    download()
+
+    download_zenodo()
 
     @st.experimental_memo(suppress_st_warning=True)
     def get_generators(metadata):
