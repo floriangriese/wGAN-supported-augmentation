@@ -29,7 +29,7 @@ if __name__ == "__main__":
     metadata = get_meta_data()
 
 
-    @st.cache_data
+    @st.cache_resource
     def download_zenodo():
         urls = {
             "generator_epoch_3361_iter_30250_cla0.pt": "https://zenodo.org/record/7685453/files/generator_epoch_3361_iter_30250_cla0.pt?download=1",
@@ -44,7 +44,7 @@ if __name__ == "__main__":
 
     download_zenodo()
 
-    @st.cache_data
+    @st.cache_resource
     def get_generators(metadata):
         #st.write("Cache miss: get_generators")
         checkpoints = {
@@ -62,7 +62,7 @@ if __name__ == "__main__":
 
     generators = get_generators(metadata)
 
-    @st.cache_data
+    @st.cache_resource
     def get_generated_images(_generators, bsize, n_gen_images, nz, device):
         #st.write("Cache miss: get_generated_images")
         """
