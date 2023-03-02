@@ -1,7 +1,7 @@
-streamlit
-numpy
-torch
-torchvision
-h5py
-firstgalaxydata
-notebook
+streamlit==1.19.0
+numpy==1.24.2
+torch==1.13.1
+torchvision==0.14.1
+h5py==3.8.0
+firstgalaxydata==0.2.1
+notebook==6.5.2
