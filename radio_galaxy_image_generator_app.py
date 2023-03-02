@@ -15,7 +15,7 @@ if __name__ == "__main__":
     print("app started")
     device = torch.device('cpu')
 
-    @st.cache
+    @st.cache_data
     def get_meta_data():
          metadata = {
              'image_shape': [1, 128, 128],
@@ -29,7 +29,7 @@ if __name__ == "__main__":
     metadata = get_meta_data()
 
 
-    @st.cache
+    @st.cache_data
     def download_zenodo():
         urls = {
             "generator_epoch_3361_iter_30250_cla0.pt": "https://zenodo.org/record/7685453/files/generator_epoch_3361_iter_30250_cla0.pt?download=1",
@@ -44,7 +44,7 @@ if __name__ == "__main__":
 
     download_zenodo()
 
-    @st.experimental_memo(suppress_st_warning=True)
+    @st.cache_data
     def get_generators(metadata):
         #st.write("Cache miss: get_generators")
         checkpoints = {
@@ -62,7 +62,7 @@ if __name__ == "__main__":
 
     generators = get_generators(metadata)
 
-    @st.experimental_memo(suppress_st_warning=True)
+    @st.cache_data
     def get_generated_images(_generators, bsize, n_gen_images, nz, device):
         #st.write("Cache miss: get_generated_images")
         """
@@ -93,7 +93,7 @@ if __name__ == "__main__":
         return generated_images
 
 
-    @st.experimental_singleton(suppress_st_warning=True)
+    @st.cache_resource
     def get_data_loader():
         #st.write("Cache miss: get_data_loader")
         train_transform = transforms.Compose(
@@ -142,7 +142,7 @@ if __name__ == "__main__":
     images, labels = get_image_stacks()
 
 
-    @st.experimental_memo(suppress_st_warning=True)
+    @st.cache_data
     def get_image_stack_gen(_result):
         #st.write("Cache miss: get_image_stack_gen")
         gen_imgs = {k: torch.vstack([z for z in v]) for k,v in _result.items()}
@@ -210,7 +210,7 @@ if __name__ == "__main__":
     tg3 = thresh_gen_images[3][thresh_gen_indices[3]].view(thresh_gen_images[3].size())
 
 
-    #@st.experimental_memo(suppress_st_warning=True)
+    #@st.cache_data
     def convert_data_to_hdf5(d, h):
         filename="{}.h5".format(h)
         hf = h5py.File(filename, "w")
