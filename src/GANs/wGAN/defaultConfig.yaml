@@ -1,0 +1,30 @@
+---
+"setup": 'two-player'
+#"random_seed":          4242
+# Number of GPUs available. Use 0 for CPU mode.
+"ngpu":                 1
+"num_iterations":       100000
+
+"save_model_every":     125
+"validate_model_every": 125
+"validate_stats":       1000
+# Critic training cycles per generator cycle
+"n_critic":             5
+"lambda_gp":            10
+# Number of workers for train_dataloader
+"workers":              4
+# Batch size during training
+"batch_size":           300
+# Size of images final image dimensions including nc as first input
+"image_shape":          [1, 128, 128]
+# Size of z latent vector (i.e. size of generator input)
+"nz":                   100
+# Size of feature maps in generator
+"ngf":                  64
+# Size of feature maps in critic
+"ndf":                  64
+# Learning rate for optimizers
+"lr":                   0.0001
+# Beta1 hyperparameters for Adam optimisers
+"beta1":                0
+"beta2":                0.9

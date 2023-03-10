@@ -3,7 +3,12 @@ import os
 import numpy as np
 from torchvision.datasets.utils import download_url
 import torch
-import wGAN_models as models
+import sys
+file_folder = os.path.dirname(__file__)
+project_folder = os.path.normpath(os.path.join(file_folder, "..", ".."))
+sys.path.append(os.path.normpath(project_folder))
+import src.GANs.wGAN.wGANModels as Models
+
 import torchvision.transforms as transforms
 import h5py
 import random
@@ -53,7 +58,7 @@ if __name__ == "__main__":
             2: "generator_epoch_1305_iter_11750_cla2.pt",
             3: "generator_epoch_4416_iter_39750_cla3.pt"
         }
-        generators = {k: models.Generator(metadata['nz'], 1, metadata['ngf'], 4).cpu() for k in checkpoints}
+        generators = {k: Models.Generator(metadata['nz'], 1, metadata['ngf'], 4).cpu() for k in checkpoints}
         for label, checkpoint in checkpoints.items():
             generators[label].load_state_dict(torch.load(checkpoint, map_location=device))
             generators[label].eval();

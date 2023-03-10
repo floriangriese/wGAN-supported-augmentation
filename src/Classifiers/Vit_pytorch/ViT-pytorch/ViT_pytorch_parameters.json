@@ -1,0 +1,37 @@
+{
+  "--classes" : [
+    "FRI",
+    "FRII",
+    "Compact",
+    "Bent"
+  ],
+
+  "--name" : "ViT",
+  "--project_name" : "radiogalaxies-vit-crossvalid",
+  "--dataset" : "galaxy_GAN_dym",
+  "--predict_dataset": "valid",
+  "--dataset_name" : "galaxy_data_crossvalid_0_h5.h5",
+  "--generator_path_filename" : "<PATHTOYOURPROJECTROOT>/configs/Generator_xval_0_CNN_Histograms_paths.yaml",
+  "--balancing_mode" : "balanced",
+  "--dataset_ratio_real_fake" : 2,
+  "--bsize" : 100,
+  "--freeze_parameters" : false,
+  "--use_weighting": true,
+  "--pretrained_dir" : "checkpoint/ViT-B_16.npz",
+  "--model_type" : "ViT-B_16",
+  "--img_size" : 224,
+  "--train_batch_size" : 32,
+  "--eval_batch_size" : 32,
+  "--eval_every" : 100,
+  "--learning_rate" : 0.03,
+  "--weight_decay" : 0,
+  "--num_steps" : 10000,
+  "--decay_type" : "cosine",
+  "--warmup_steps" : 500,
+  "--max_grad_norm" : 1.0,
+  "--local_rank" : -1,
+  "--seed" : 42,
+  "--gradient_accumulation_steps" : 8,
+  "--loss_scale" : 0.0
+
+}

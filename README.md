@@ -1,23 +1,49 @@
-# Morphological Classification of Radio Galaxies with wGAN-supported Augmentation
+# Radio Galaxy with GANs and Classifier
 [![License](https://img.shields.io/github/license/floriangriese/wGAN-supported-augmentation?color=green&style=flat)](https://github.com/floriangriese/wGAN-supported-augmentation/blob/main/LICENSE)
 
-## Impression of the generated radio galaxy images 
-https://radiogalaxyimagegenerator.streamlit.app/
+## Galaxy class definition
 
-## Install dependencies
+![image info](pictures/RadioGalaxyProject.png)
+
+## Prerequisite
+It is necessary to have a Comet (https://www.comet.com/site/) account, in order to run the GAN training.
+Export your CometML API key as an environment variable
+
+`export COMET_EXPERIMENT_KEY=<YOURCOMETMLAPIKEY>`
+
+## Install
+
 `pip install -r requirements.txt`
 
-## Start Jupiter notebook
-`jupyter notebook`
+## Usage GAN Training
 
-## Open and execute
-`radio_galaxy_image_generator_notebook.ipynb`
+`python3 wGANMain.py config/defaultConfig.yaml --EXP <YOUREXPERIMENTNAME> --comet_project_name wgan_training`
+
+## Usage GAN Image generation with checkpoints
+
+Open the `radio_galaxy_image_generator_notebook.ipynb` to generate radio galaxy image with pre-saved checkpoints.
+
+Impression of the generated radio galaxy images
+https://radiogalaxyimagegenerator.streamlit.app/
+
+## Usage training FCN/CNN Classifiers with real and generated images
+
+`python3 run_augmented_classifier_training.py <n_iterations> <lambda_gen>` 
+
+## Usage training Vit Classifier with real and generated images
+Change the parameter in `ViT_pytorch_parameters.json` to adjust the training hyperparameters 
+and select your cross-validation set with `x_val_index`.
+
+`python3 run_train.py --params_file ViT_pytorch_parameters.json --x_val_index 1 --api_key <YOURCOMETMLAPIKEY>`
+
+## Usage prediction Vit Classifier with real and generated images
+When you have trained the Vit classifier with all `x_val_index`, you can run the `predict.py` for all `x_val_index` in one run with
+
+`python3 run_predict.py`
 
 ## Examples generared radio galaxy images
-![image](img/gen_grid.png)
 
-## Examples real radio galaxy images
-![image](img/real_grid.png)
+![image](pictures/gen_grid.png)
 
 If you find the generated radio galaxy images useful, please cite:
 
@@ -33,4 +59,3 @@ If you find the generated radio galaxy images useful, please cite:
 	eprinttype = {arxiv},
 	eprint = {2212.08504 [astro-ph]}
 }`
-
